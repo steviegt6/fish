@@ -18,7 +18,7 @@ Delays the current thread by `time` milliseconds.
 
 ### `sendFish()`
 
-Communicates data about your fish count to the server.
+Sends fish to another user.
 
 ### `viewRareFish()`
 
