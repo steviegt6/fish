@@ -94,7 +94,7 @@ create('<p class="hasTopContent">Minimum Fish<input type="number" class="numberB
 create('<p class="hasTopContent hasBottomContent">AutoUncle<input class="checkbox" type="checkbox" id="autoUncleBox" name="autoUncleBox"></p>', 'createdTooltip', 1);
 
 create('<p class="infoSubHeader hasBottomContent" id="fishPerClick">Per click counter...</p>', 'createdTooltip', 0);
-create('<p class="infoSubHeader" id="fishPerSecond">Per second counter...</p>', 'createdTooltip', 0);
+create('<abbr title="Estimate based on statistics. May be inaccurate if any requests are dropped."><p class="infoSubHeader" id="fishPerSecond">Per second counter...</p></abbr>', 'createdTooltip', 0);
 create('<p class="hasTopContent">Autofish<input class="checkbox" type="checkbox" id="autoFishBox" name="autoFishBox"></p>', 'createdTooltip', 0);
 
 
