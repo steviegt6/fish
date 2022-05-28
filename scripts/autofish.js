@@ -34,6 +34,7 @@ function create(htmlStr, eclass, index) {
 
 // Inserts new elements to the webpage to display information and control the autofisher.
 injectCss(nextFishCss)
+create('<p class="infoSubHeader" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
 create('<p class="infoSubHeader" id="nextFish">Next uncle counter...</p>', 'createdTooltip', 1);
 create('<p>Minimum Fish<input type="number" id="maxFishNumber" name="maxFishNumber"></p>', 'createdTooltip', 1);
 create('<p>AutoUncle<input type="checkbox" id="autoUncleBox" name="autoUncleBox"></p>', 'createdTooltip', 1);
@@ -86,7 +87,7 @@ function autoFish()
 		document.getElementById("nextFish").innerHTML = "AutoUncle is off";
 	}
 
-	
+	document.getElementById("clicksPerUncle").innerHTML = (unclePrice / fishPerClick) + " clicks required per Uncle";
 	
 	// Retrieve number of fish
 	const data = {
