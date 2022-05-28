@@ -9,6 +9,18 @@ const nextFishCss = `
 .infoSubHeader:hover {
     color: white;
 }
+
+.captchaMessage {
+	margin-top: 50px;
+	width: 450px;
+	font-size: 100%;
+    font-weight: 300;
+    color: white;
+    font-family: Arial;	
+    background: black;
+    padding: 5px;
+
+}
 `;
 
 function insertAfter(newNode, existingNode) {
@@ -34,6 +46,10 @@ function create(htmlStr, eclass, index) {
 
 // Inserts new elements to the webpage to display information and control the autofisher.
 injectCss(nextFishCss)
+
+
+create('<div class="captchaMessage">If you haven\'t already, install <a href="https://www.tampermonkey.net/" style="font-size: inherit;">TamperMonkey</a> and <a href="https://greasyfork.org/en/scripts/376404-recaptcha-clicker" style="font-size: inherit;">this script</a> to automatically skip Captchas</div>', 'g-recaptcha', 0);
+
 create('<p class="infoSubHeader" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
 create('<p class="infoSubHeader" id="nextFish">Next uncle counter...</p>', 'createdTooltip', 1);
 create('<p>Minimum Fish<input type="number" id="maxFishNumber" name="maxFishNumber"></p>', 'createdTooltip', 1);
@@ -144,3 +160,21 @@ function autoUncle()
 setInterval(autoFish, 400)
 setInterval(autoUncle, 1000); // Buy uncles at a slower rate to avoid buying excess uncles due to lag
 setInterval(update, 2000)
+
+
+
+
+ function trySolveCaptcha()
+ {
+ 	fetch('https://traoxfish.us-3.evennode.com/checkcaptchaed', { method: 'POST', credentials: "same-origin", headers: { 'Content-Type': 'application/json', },
+     }).then(response => { return response.json(); }).then(json => { if (json.status == "success") {
+             if (json.captchaed) {
+                 // document.getElementById("recaptcha-anchor").click()
+ 				document.getElementsByClassName("submitcaptcha")[0].click()
+             }
+         }
+     });
+ 	// document.getElementById("recaptcha-anchor").click()
+ }
+ 
+ setInterval(trySolveCaptcha, 1000)
