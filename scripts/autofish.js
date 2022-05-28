@@ -102,6 +102,9 @@ document.getElementById("autoFishBox").checked = getCookie("autoFishBox");
 document.getElementById("autoUncleBox").checked = getCookie("autoUncleBox");
 document.getElementById("maxFishNumber").value = getCookie("maxFishNumber");
 
+var historicFish = new Array();
+var historicFishDelta = new Array();
+var historicFishIndex = 0;
 
 var fishCount = 0;
 var uncleCount = 0;
@@ -153,6 +156,8 @@ function autoFish()
     });
 }
 
+setInterval(autoFish, 400)
+
 function update()
 {
 	document.cookie = "autoFishBox=" + document.getElementById("autoFishBox").checked;
@@ -186,6 +191,8 @@ function update()
 	document.getElementById("fishPerClick").innerHTML = fishPerClick + " fish per click";
 }
 
+setInterval(update, 2000)
+
 function autoUncle()
 {
 	var maxFish = parseFloat(document.getElementById("maxFishNumber").value);
@@ -195,11 +202,15 @@ function autoUncle()
     }
 }
 
-setInterval(autoFish, 400)
 setInterval(autoUncle, 1000); // Buy uncles at a slower rate to avoid buying excess uncles due to lag
-setInterval(update, 2000)
 
+function updateFishPerSecond()
+{
+	fishPerSecond = fishPerClick * (1 / 0.4);
+	document.getElementById("fishPerSecond").innerHTML = fishPerSecond + " fish per second";
+}
 
+setInterval(updateFishPerSecond, 100)
 
 
  function trySolveCaptcha()
