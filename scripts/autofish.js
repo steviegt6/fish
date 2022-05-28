@@ -35,7 +35,7 @@ const newCss = `
 }
 
 .numberBox {
-	width: 50px;
+	width: 15em;
 	height: 22px;
 }
 
