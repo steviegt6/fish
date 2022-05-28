@@ -1,7 +1,6 @@
-const nextFishCss = `
+const newCss = `
 .infoSubHeader {
     margin-top: -20px;
-    /* margin-bottom: -10px; */
     color: #959595;
     transition: color 0.5s ease-in-out;
 }
@@ -20,6 +19,42 @@ const nextFishCss = `
     background: black;
     padding: 5px;
 
+}
+
+.hasTopContent {
+	margin-top: 0px;
+}
+
+.hasBottomContent {
+	margin-bottom: 0px;
+}
+
+.checkbox {
+	width: 22px;
+	height: 22px;
+}
+
+.numberBox {
+	width: 50px;
+	height: 22px;
+}
+
+.inlineInput {
+	margin-left: 8px;
+}
+`;
+
+const tamperCss = `
+.fishbutton,
+.unclebutton,
+.rarefishbutton {
+		margin-top: -10px;
+}
+
+#fishcount,
+#unclecount
+/*#rarefishcount*/ {
+	margin-bottom: 0px;
 }
 `;
 
@@ -44,20 +79,23 @@ function create(htmlStr, eclass, index) {
     insertAfter(frag, document.getElementsByClassName(eclass)[index]);
 }
 
+// Inject new CSS for our styling.
+injectCss(newCss)
+
+// Modifies CSS from traox.dev to account for our new elements.
+injectCss(tamperCss);
+
 // Inserts new elements to the webpage to display information and control the autofisher.
-injectCss(nextFishCss)
-
-
 create('<div class="captchaMessage">If you haven\'t already, install <a href="https://www.tampermonkey.net/" style="font-size: inherit;">TamperMonkey</a> and <a href="https://greasyfork.org/en/scripts/376404-recaptcha-clicker" style="font-size: inherit;">this script</a> to automatically skip Captchas</div>', 'g-recaptcha', 0);
 
-create('<p class="infoSubHeader" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
+create('<p class="infoSubHeader hasBottomContent" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
 create('<p class="infoSubHeader" id="nextFish">Next uncle counter...</p>', 'createdTooltip', 1);
-create('<p>Minimum Fish<input type="number" id="maxFishNumber" name="maxFishNumber"></p>', 'createdTooltip', 1);
-create('<p>AutoUncle<input type="checkbox" id="autoUncleBox" name="autoUncleBox"></p>', 'createdTooltip', 1);
+create('<p class="hasTopContent">Minimum Fish<input type="number" class="numberBox inlineInput" id="maxFishNumber" name="maxFishNumber"></p>', 'createdTooltip', 1);
+create('<p class="hasTopContent hasBottomContent">AutoUncle<input class="checkbox" type="checkbox" id="autoUncleBox" name="autoUncleBox"></p>', 'createdTooltip', 1);
 
-create('<p class="infoSubHeader" id="fishPerClick">Per click counter...</p>', 'createdTooltip', 0);
+create('<p class="infoSubHeader hasBottomContent" id="fishPerClick">Per click counter...</p>', 'createdTooltip', 0);
 create('<p class="infoSubHeader" id="fishPerSecond">Per second counter...</p>', 'createdTooltip', 0);
-create('<p>Autofish<input type="checkbox" id="autoFishBox" name="autoFishBox"></p>', 'createdTooltip', 0);
+create('<p class="hasTopContent">Autofish<input class="checkbox" type="checkbox" id="autoFishBox" name="autoFishBox"></p>', 'createdTooltip', 0);
 
 
 document.getElementById("autoFishBox").checked = getCookie("autoFishBox");
