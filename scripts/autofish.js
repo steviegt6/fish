@@ -88,7 +88,10 @@ injectCss(tamperCss);
 // Inserts new elements to the webpage to display information and control the autofisher.
 create('<div class="captchaMessage">If you haven\'t already, install <a href="https://www.tampermonkey.net/" style="font-size: inherit;">TamperMonkey</a> and <a href="https://greasyfork.org/en/scripts/376404-recaptcha-clicker" style="font-size: inherit;">this script</a> to automatically skip Captchas</div>', 'g-recaptcha', 0);
 
-create('<p class="infoSubHeader hasBottomContent" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
+create('<p class="infoSubHeader hasBottomContent" id="rareFishROI">Rare Fish ROI...</p>', 'createdTooltip', 2);
+
+create('<p class="infoSubHeader hasBottomContent" id="uncleROI">Uncle ROI...</p>', 'createdTooltip', 1);
+create('<p class="infoSubHeader" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
 create('<p class="infoSubHeader" id="nextFish">Next uncle counter...</p>', 'createdTooltip', 1);
 create('<p class="hasTopContent">Minimum Fish<input type="number" class="numberBox inlineInput" id="maxFishNumber" name="maxFishNumber"></p>', 'createdTooltip', 1);
 create('<p class="hasTopContent hasBottomContent">AutoUncle<input class="checkbox" type="checkbox" id="autoUncleBox" name="autoUncleBox"></p>', 'createdTooltip', 1);
@@ -97,9 +100,8 @@ create('<p class="infoSubHeader hasBottomContent" id="fishPerClick">Per click co
 create('<abbr title="Estimate based on statistics. May be inaccurate if any requests are dropped."><p class="infoSubHeader" id="fishPerSecond">Per second counter...</p></abbr>', 'createdTooltip', 0);
 create('<p class="hasTopContent">Autofish<input class="checkbox" type="checkbox" id="autoFishBox" name="autoFishBox"></p>', 'createdTooltip', 0);
 
-
-document.getElementById("autoFishBox").checked = getCookie("autoFishBox");
-document.getElementById("autoUncleBox").checked = getCookie("autoUncleBox");
+document.getElementById("autoFishBox").checked = JSON.parse(getCookie("autoFishBox"));
+document.getElementById("autoUncleBox").checked = JSON.parse(getCookie("autoUncleBox"));
 document.getElementById("maxFishNumber").value = getCookie("maxFishNumber");
 
 var historicFish = new Array();
@@ -120,11 +122,10 @@ function autoFish()
 { 
 	var maxFish = parseFloat(document.getElementById("maxFishNumber").value);
 
-	if (!document.getElementById("autoFishBox").checked)
-		return;
-	
-    goFishing(); 
-    
+	if (document.getElementById("autoFishBox").checked)
+	{
+		goFishing(); 
+	}
 	
 	if (document.getElementById("autoUncleBox").checked)
 	{
@@ -154,6 +155,18 @@ function autoFish()
         body: JSON.stringify(data),}).then(response => { return response.json(); }).then(json => {
 			fishCount = json.fish;
     });
+	
+	// Calculate ROI
+	fishPerClick = getFishPerClick(uncleCount, rareFishCount);
+	document.getElementById("fishPerClick").innerHTML = fishPerClick + " fish per click";
+	
+	var newUncleFishPerClick = getFishPerClick(uncleCount + 1, rareFishCount);
+	var uncleROI = unclePrice / (newUncleFishPerClick - fishPerClick);
+	document.getElementById("uncleROI").innerHTML = "Return on investment in " + uncleROI + " clicks";
+	
+	var newRareFishFishPerClick = getFishPerClick(uncleCount, rareFishCount + 1);
+	var rareFishROI = rareFishPrice / (newRareFishFishPerClick - fishPerClick);
+	document.getElementById("rareFishROI").innerHTML = "Return on investment in " + rareFishROI + " clicks";
 }
 
 setInterval(autoFish, 400)
@@ -187,8 +200,11 @@ function update()
         rareFishPrice = json.cost;
     });
 
-	fishPerClick = Math.floor((1 + uncleCount) * (1 + 0.001 * rareFishCount));
-	document.getElementById("fishPerClick").innerHTML = fishPerClick + " fish per click";
+}
+
+function getFishPerClick(uncles, rareFish)
+{
+	return  Math.floor((1 + uncles) * (1 + 0.001 * rareFish));
 }
 
 setInterval(update, 2000)
