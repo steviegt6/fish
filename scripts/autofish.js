@@ -86,6 +86,9 @@ injectCss(newCss)
 injectCss(tamperCss);
 
 // Inserts new elements to the webpage to display information and control the autofisher.
+create('<p class="hasTopContent hasBottomContent">Autoreload if captcha fails<input class="checkbox" type="checkbox" id="captchaReloadBox" name="captchaReloadBox"></p>', 'topnav', 0);
+
+
 create('<div class="captchaMessage">If you haven\'t already, install <a href="https://www.tampermonkey.net/" style="font-size: inherit;">TamperMonkey</a> and <a href="https://greasyfork.org/en/scripts/376404-recaptcha-clicker" style="font-size: inherit;">this script</a> to automatically skip Captchas</div>', 'g-recaptcha', 0);
 
 create('<p class="infoSubHeader hasBottomContent" id="rareFishROI">Rare Fish ROI...</p>', 'createdTooltip', 2);
@@ -99,10 +102,6 @@ create('<p class="hasTopContent hasBottomContent">AutoUncle<input class="checkbo
 create('<p class="infoSubHeader hasBottomContent" id="fishPerClick">Per click counter...</p>', 'createdTooltip', 0);
 create('<abbr title="Estimate based on statistics. May be inaccurate if any requests are dropped."><p class="infoSubHeader" id="fishPerSecond">Per second counter...</p></abbr>', 'createdTooltip', 0);
 create('<p class="hasTopContent">Autofish<input class="checkbox" type="checkbox" id="autoFishBox" name="autoFishBox"></p>', 'createdTooltip', 0);
-
-document.getElementById("autoFishBox").checked = JSON.parse(getCookie("autoFishBox"));
-document.getElementById("autoUncleBox").checked = JSON.parse(getCookie("autoUncleBox"));
-document.getElementById("maxFishNumber").value = getCookie("maxFishNumber");
 
 var historicFish = new Array();
 var historicFishDelta = new Array();
@@ -123,6 +122,10 @@ var captchaAttempts = 0;
 function autoFish() 
 { 
 	var maxFish = parseFloat(document.getElementById("maxFishNumber").value);
+	// if (maxFish = NaN)
+	// {
+	// 	maxFish = 0;
+	// }
 
 	if (document.getElementById("autoFishBox").checked)
 	{
@@ -175,6 +178,7 @@ setInterval(autoFish, 400)
 
 function update()
 {
+	document.cookie = "captchaReloadBox=" + document.getElementById("captchaReloadBox").checked;
 	document.cookie = "autoFishBox=" + document.getElementById("autoFishBox").checked;
 	document.cookie = "autoUncleBox=" + document.getElementById("autoUncleBox").checked;
 	document.cookie = "maxFishNumber=" + document.getElementById("maxFishNumber").value;
@@ -239,7 +243,7 @@ setInterval(updateFishPerSecond, 100)
                  // document.getElementById("recaptcha-anchor").click()
  				document.getElementsByClassName("submitcaptcha")[0].click()
 				captchaAttempts++;
-				if (captchaAttempts > 15)
+				if (captchaAttempts > 15 && document.getElementById("captchaReloadBox").checked)
 				{
 					window.location.reload();
 				}
@@ -254,3 +258,8 @@ setInterval(updateFishPerSecond, 100)
  }
  
  setInterval(trySolveCaptcha, 1000)
+ 
+document.getElementById("captchaReloadBox").checked = JSON.parse(getCookie("captchaReloadBox"));
+document.getElementById("autoFishBox").checked = JSON.parse(getCookie("autoFishBox"));
+document.getElementById("autoUncleBox").checked = JSON.parse(getCookie("autoUncleBox"));
+document.getElementById("maxFishNumber").value = getCookie("maxFishNumber");
