@@ -117,6 +117,8 @@ var rareFishPrice = 0;
 
 var fishPerClick = 0;
 
+var captchaAttempts = 0;
+
 // Automatically calls goFishing and checks if there are sufficient fish to buy an uncle.
 function autoFish() 
 { 
@@ -236,7 +238,16 @@ setInterval(updateFishPerSecond, 100)
              if (json.captchaed) {
                  // document.getElementById("recaptcha-anchor").click()
  				document.getElementsByClassName("submitcaptcha")[0].click()
+				captchaAttempts++;
+				if (captchaAttempts > 15)
+				{
+					window.location.reload();
+				}
              }
+			 else
+			 {
+				 captchaAttempts = 0;
+			 }
          }
      });
  	// document.getElementById("recaptcha-anchor").click()
