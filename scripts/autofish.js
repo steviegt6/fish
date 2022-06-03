@@ -92,6 +92,11 @@ create('<p class="hasTopContent hasBottomContent">Autoreload if captcha fails<in
 create('<div class="captchaMessage">If you haven\'t already, install <a href="https://www.tampermonkey.net/" style="font-size: inherit;">TamperMonkey</a> and <a href="https://greasyfork.org/en/scripts/376404-recaptcha-clicker" style="font-size: inherit;">this script</a> to automatically skip Captchas</div>', 'g-recaptcha', 0);
 
 create('<p class="infoSubHeader hasBottomContent" id="rareFishROI">Rare Fish ROI...</p>', 'createdTooltip', 2);
+create('<p class="infoSubHeader" id="rareFishPriceChange">Rare fish price change...</p>', 'createdTooltip', 2);
+create('<p class="infoSubHeader" id="clicksPerRareFish">Clicks per rare fish...</p>', 'createdTooltip', 2);
+create('<p class="infoSubHeader" id="nextFish2">Next uncle counter...</p>', 'createdTooltip', 2);
+create('<p class="hasTopContent">Minimum Fish<input type="number" class="numberBox inlineInput" id="maxFishNumber2" name="maxFishNumber2"></p>', 'createdTooltip', 2);
+create('<p class="hasTopContent hasBottomContent">AutoRareFish<input class="checkbox" type="checkbox" id="autoRareFishBox" name="autoRareFishBox"></p>', 'createdTooltip', 2);
 
 create('<p class="infoSubHeader hasBottomContent" id="uncleROI">Uncle ROI...</p>', 'createdTooltip', 1);
 create('<p class="infoSubHeader" id="clicksPerUncle">Clicks per uncle...</p>', 'createdTooltip', 1);
@@ -111,6 +116,11 @@ var fishCount = 0;
 var uncleCount = 0;
 var unclePrice = 0;
 
+var initialRareFishPrice = 0;
+fetch('https://traoxfish.us-3.evennode.com/getrarefishcost', { method: 'GET', credentials: "same-origin", headers: { 'Content-Type': 'application/json', },
+	}).then(response => { return response.json(); }).then(json => {
+        initialRareFishPrice = json.cost;
+    });
 var rareFishCount = 0;
 var rareFishPrice = 0;
 
@@ -122,6 +132,7 @@ var captchaAttempts = 0;
 function autoFish() 
 { 
 	var maxFish = parseFloat(document.getElementById("maxFishNumber").value);
+	var maxFish2 = parseFloat(document.getElementById("maxFishNumber2").value);
 	// if (maxFish = NaN)
 	// {
 	// 	maxFish = 0;
@@ -149,8 +160,28 @@ function autoFish()
 	{
 		document.getElementById("nextFish").innerHTML = "AutoUncle is off";
 	}
+	
+	
+	if (document.getElementById("autoRareFishBox").checked)
+	{
+		var clicksToNextRareFish = Math.floor((rareFishPrice - (fishCount - maxFish2)) / fishPerClick);
+		
+		if (clicksToNextRareFish > 0)
+		{
+			document.getElementById("nextFish2").innerHTML = clicksToNextRareFish + " clicks until next Rare Fish";
+		}
+		else
+		{
+			document.getElementById("nextFish2").innerHTML = "Buying rare fish...";
+		}
+	}
+	else
+	{
+		document.getElementById("nextFish2").innerHTML = "AutoRareFish is off";
+	}
 
 	document.getElementById("clicksPerUncle").innerHTML = (unclePrice / fishPerClick) + " clicks required per Uncle";
+	document.getElementById("clicksPerRareFish").innerHTML = (rareFishPrice / fishPerClick) + " clicks required per Rare Fish";
 	
 	// Retrieve number of fish
 	const data = {
@@ -182,6 +213,8 @@ function update()
 	document.cookie = "autoFishBox=" + document.getElementById("autoFishBox").checked;
 	document.cookie = "autoUncleBox=" + document.getElementById("autoUncleBox").checked;
 	document.cookie = "maxFishNumber=" + document.getElementById("maxFishNumber").value;
+	document.cookie = "autoRareFishBox=" + document.getElementById("autoRareFishBox").checked;
+	document.cookie = "maxFishNumber2=" + document.getElementById("maxFishNumber2").value;
 	
 	
 	const data = {
@@ -205,7 +238,9 @@ function update()
 	}).then(response => { return response.json(); }).then(json => {
         rareFishPrice = json.cost;
     });
-
+	
+	
+	document.getElementById("rareFishPriceChange").innerHTML = "Rare fish price has changed by " + (rareFishPrice - initialRareFishPrice) + " since the start of the current session (from " + initialRareFishPrice + " to " + rareFishPrice + ")";
 }
 
 function getFishPerClick(uncles, rareFish)
@@ -215,16 +250,21 @@ function getFishPerClick(uncles, rareFish)
 
 setInterval(update, 2000)
 
-function autoUncle()
+function autoBuy()
 {
 	var maxFish = parseFloat(document.getElementById("maxFishNumber").value);
-	if (fishCount > maxFish + unclePrice)
+	if (fishCount > maxFish + unclePrice && document.getElementById("autoUncleBox").checked)
     {
         buyUncle();
     }
+	var maxFish2 = parseFloat(document.getElementById("maxFishNumber2").value);
+	if (fishCount > maxFish2 + rareFishPrice && document.getElementById("autoRareFishBox").checked)
+    {
+        buyRareFish();
+    }
 }
 
-setInterval(autoUncle, 1000); // Buy uncles at a slower rate to avoid buying excess uncles due to lag
+setInterval(autoBuy, 1000); // Buy uncles at a slower rate to avoid buying excess uncles due to lag
 
 function updateFishPerSecond()
 {
@@ -263,3 +303,5 @@ document.getElementById("captchaReloadBox").checked = JSON.parse(getCookie("capt
 document.getElementById("autoFishBox").checked = JSON.parse(getCookie("autoFishBox"));
 document.getElementById("autoUncleBox").checked = JSON.parse(getCookie("autoUncleBox"));
 document.getElementById("maxFishNumber").value = getCookie("maxFishNumber");
+document.getElementById("autoRareFishBox").checked = JSON.parse(getCookie("autoRareFishBox"));
+document.getElementById("maxFishNumber2").value = getCookie("maxFishNumber2");
